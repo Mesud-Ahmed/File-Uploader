@@ -43,7 +43,7 @@ model File {
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
+id        String   @id @default(cuid())
   sid       String   @unique
   data      Json
   expiresAt DateTime
