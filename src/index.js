@@ -51,6 +51,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/", require("./routes/auth"));
+app.use("/upload", require("./routes/upload"));
 
 // Start server
 app.listen(PORT, () => {
