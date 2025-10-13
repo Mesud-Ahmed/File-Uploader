@@ -7,6 +7,9 @@ const flash = require("connect-flash");
 const path = require("path");
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const prisma = require("./prismaClient");
+const expressLayouts = require("express-ejs-layouts");
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +17,10 @@ const PORT = process.env.PORT || 3000;
 // View engine setup
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+app.use(expressLayouts);
+app.set("layout", "layout"); // default layout file
+
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -34,13 +41,12 @@ app.use(
   })
 );
 
-// Flash and Passport
+
 app.use(flash());
 require("./config/passport")(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Flash messages middleware (make available in all EJS templates)
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash("success_msg");
   res.locals.error_msg = req.flash("error_msg");
@@ -52,6 +58,8 @@ app.use((req, res, next) => {
 // Routes
 app.use("/", require("./routes/auth"));
 app.use("/upload", require("./routes/upload"));
+app.use("/folders", require("./routes/folders"));
+app.use("/files", require("./routes/files"));
 
 // Start server
 app.listen(PORT, () => {

@@ -24,38 +24,48 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Upload page
-router.get("/", ensureAuthenticated, (req, res) => {
-  res.render("upload");
+router.get("/", ensureAuthenticated, async (req, res) => {
+  const folders = await prisma.folder.findMany({
+    where: { ownerId: req.user.id },
+  });
+  res.render("upload", { folders });
 });
 
 // Handle upload POST
-router.post("/", ensureAuthenticated, upload.single("file"), async (req, res) => {
-  try {
-    const file = req.file;
-    if (!file) {
-      req.flash("error_msg", "Please select a file to upload");
-      return res.redirect("/upload");
+router.post(
+  "/",
+  ensureAuthenticated,
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      const file = req.file;
+      if (!file) {
+        req.flash("error_msg", "Please select a file to upload");
+        return res.redirect("/upload");
+      }
+
+      await prisma.file.create({
+        data: {
+          filename: file.filename,
+          originalName: file.originalname,
+          mimeType: file.mimetype,
+          size: file.size,
+          path: file.path,
+          owner: { connect: { id: req.user.id } },
+          folder: req.body.folderId
+            ? { connect: { id: parseInt(req.body.folderId) } }
+            : undefined,
+        },
+      });
+
+      req.flash("success_msg", "File uploaded successfully!");
+      res.redirect("/dashboard");
+    } catch (err) {
+      console.error(err);
+      req.flash("error_msg", "Upload failed, please try again");
+      res.redirect("/upload");
     }
-
-    await prisma.file.create({
-      data: {
-        filename: file.filename,
-        originalName: file.originalname,
-        mimeType: file.mimetype,
-        size: file.size,
-        path: file.path,
-        owner: { connect: { id: req.user.id } },
-      },
-    });
-
-    req.flash("success_msg", "File uploaded successfully!");
-    res.redirect("/dashboard");
-  } catch (err) {
-    console.error(err);
-    req.flash("error_msg", "Upload failed, please try again");
-    res.redirect("/upload");
   }
-});
+);
 
 module.exports = router;
