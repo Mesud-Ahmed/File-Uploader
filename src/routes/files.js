@@ -72,6 +72,7 @@ router.get("/:id", ensureAuth, async (req, res) => {
 });
 
 // ⬇ Download file
+// ⬇ Download file
 router.get("/:id/download", ensureAuth, async (req, res) => {
   try {
     const fileId = parseInt(req.params.id, 10);
@@ -89,10 +90,15 @@ router.get("/:id/download", ensureAuth, async (req, res) => {
       return res.redirect("/files");
     }
 
-    // Local file path
+    // If we have a cloud URL, redirect (Cloudinary serves the file)
+    if (file.url) {
+      return res.redirect(file.url);
+    }
+
+    // Otherwise fall back to local file download
     const filePath = path.isAbsolute(file.path)
       ? file.path
-      : path.join(__dirname, "..", file.path); // adjusted to match how you saved path
+      : path.join(__dirname, "..", file.path);
 
     if (!fs.existsSync(filePath)) {
       req.flash("error_msg", "File not found on server.");

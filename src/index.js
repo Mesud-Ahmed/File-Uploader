@@ -12,9 +12,14 @@ const expressLayouts = require("express-ejs-layouts");
 
 
 const app = express();
+app.use((req, res, next) => {
+  console.log("➡️ [REQ]", req.method, req.originalUrl);
+  next();
+});
+
 const PORT = process.env.PORT || 3000;
 
-// View engine setup
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
@@ -56,6 +61,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
+
+
 app.use("/", require("./routes/auth"));
 app.use("/upload", require("./routes/upload"));
 app.use("/folders", require("./routes/folders"));

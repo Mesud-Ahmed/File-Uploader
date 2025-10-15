@@ -35,6 +35,7 @@ model File {
   size         Int
   path         String?   // local path (for dev)
   url          String?   // cloud url (Cloudinary)
+  
   owner        User      @relation(fields: [ownerId], references: [id], name: "OwnerFiles")
   ownerId      Int
   folder       Folder?   @relation(fields: [folderId], references: [id], name: "FolderFiles")
