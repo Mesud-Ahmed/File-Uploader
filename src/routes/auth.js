@@ -79,6 +79,15 @@ router.post("/login", (req, res, next) => {
 // ------------------
 // Dashboard (protected)
 // ------------------
+router.get("/", (req, res) => {
+  if (req.isAuthenticated()) {
+    // If logged in, show dashboard directly
+    return res.render("dashboard", { user: req.user });
+  } else {
+    // Otherwise redirect to login
+    return res.redirect("/login");
+  }
+});
 router.get("/dashboard", ensureAuthenticated, (req, res) => {
   res.render("dashboard", { user: req.user });
 });

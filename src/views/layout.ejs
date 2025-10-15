@@ -13,7 +13,9 @@
         <a class="navbar-brand" href="/">FileUploader</a>
         <div>
           <% if (user) { %>
-          <a href="/dashboard" class="btn btn-sm btn-outline-light">Dashboard</a>
+          <a href="/dashboard" class="btn btn-sm btn-outline-light"
+            >Dashboard</a
+          >
           <a href="/logout" class="btn btn-sm btn-outline-light">Logout</a>
           <% } else { %>
           <a href="/login" class="btn btn-sm btn-outline-light">Login</a>
@@ -24,17 +26,13 @@
     </nav>
 
     <div class="container">
-      <% if (success_msg) { %>
+      <% if (success_msg && success_msg.length > 0) { %>
       <div class="alert alert-success"><%= success_msg %></div>
-      <% } %>
-      <% if (error_msg) { %>
+      <% } %> <% if (error_msg && error_msg.length > 0) { %>
       <div class="alert alert-danger"><%= error_msg %></div>
-      <% } %>
-      <% if (error) { %>
+      <% } %> <% if (error && error.length > 0) { %>
       <div class="alert alert-danger"><%= error %></div>
-      <% } %>
-
-      <%- body %>
+      <% } %> <%- body %>
     </div>
   </body>
 </html>
